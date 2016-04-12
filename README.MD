@@ -33,6 +33,6 @@ This extension to the cms contao allows to export a event as ical-download. It i
   
 ## Credits
   
-  **Author:** Andreas Döbeling ([GitHub](https://github.com/ADoebeling), [Xing](https://xing.doebeling.de), [Mail](mailto:ad@1601.com))
-  **Copyright:** [1601.communication gmbh](https://www.1601.com)
+  **Author:** Andreas Döbeling ([GitHub](https://github.com/ADoebeling), [Xing](https://xing.doebeling.de), [Mail](mailto:ad@1601.com))  
+  **Copyright:** [1601.communication gmbh](https://www.1601.com)  
   **License:** [CC-BY-SA](https://creativecommons.org/licenses/by-sa/3.0/)
