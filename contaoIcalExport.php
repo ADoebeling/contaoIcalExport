@@ -126,33 +126,33 @@ class icalExport
               -- dateStart
               if(addTime = 1,
                  -- Time is given
-                 DATE_FORMAT(from_unixtime(startTime), '%Y%m%dT%H%i%s'),
+                 DATE_FORMAT(from_unixtime(startTime), 'DTSTART;TZID=Europe/Berlin:%Y%m%dT%H%i%s'),
 
                  -- Only date is given
-                 DATE_FORMAT(from_unixtime(startDate), '%Y%m%d')
+                 DATE_FORMAT(from_unixtime(startDate), 'DTSTART;VALUE=DATE:%Y%m%d')
               ) as dateStart,
 
               -- dateEnd
               if(addTime = 1,
 
                  -- Time is given
-                 if(endTime = 0 || endTime < startTime || DATE_FORMAT(from_unixtime(endTime), '%H%i') = '2323',
+                 if(endTime = 0 || endTime <= startTime || DATE_FORMAT(from_unixtime(endTime), '%H%i') = '2323',
 
                    -- Time is given but 0, wrong OR 23:23 (what we use as identifier for unlimited events)
-                   DATE_FORMAT(from_unixtime(startTime + 2 * 60 * 60), '%Y%m%dT%H%i%s'),
+                   DATE_FORMAT(from_unixtime(startTime + 2 * 60 * 60), 'DTEND;TZID=Europe/Berlin:%Y%m%dT%H%i%s'),
 
                    -- Time is given and correct
-                   DATE_FORMAT(from_unixtime(endTime), '%Y%m%dT%H%i%s')
+                   DATE_FORMAT(from_unixtime(endTime), 'DTEND;TZID=Europe/Berlin:%Y%m%dT%H%i%s')
                  ),
 
                 -- Only date is given
                  if(endDate != 0 && endDate > startDate,
 
                     -- EndDate is correkt
-                    DATE_FORMAT(from_unixtime(endDate), '%Y%m%d'),
+                    DATE_FORMAT(from_unixtime(endDate + 24 * 60 * 60), 'DTEND;VALUE=DATE:%Y%m%d'),
 
                    -- EndDate is not correkt, take the startDate
-                   DATE_FORMAT(from_unixtime(startDate), '%Y%m%d')
+                   DATE_FORMAT(from_unixtime(startDate + 24 * 60 * 60), 'DTEND;VALUE=DATE:%Y%m%d')
 
                  )
               ) as dateEnd
@@ -180,7 +180,7 @@ class icalExport
             $this->address = $result['address'];
             $this->description = strip_tags($result['description']);
             $this->filename = strip_tags($result['filename']);
-            $this->summary = strip_tags($result['summery']);
+            $this->summary = strip_tags(html_entity_decode($result['summery']));
             $this->uri = $_SERVER[HTTP_REFERER];
             return $this;
         }
@@ -215,14 +215,14 @@ class icalExport
         $ics .= "END:VTIMEZONE\r\n";
 
         $ics .="BEGIN:VEVENT\r\n";
-        $ics .="DTEND:".$this->dateEnd."\r\n";
+        $ics .=$this->dateEnd."\r\n";
         $ics .="UID:".$this->eventId."\r\n";
         $ics .="DTSTAMP:".$this->dateStart."\r\n";
         $ics .="LOCATION:".$this->address."\r\n";
         $ics .= 'DESCRIPTION:'.$this->getIcalSplit('DESCRIPTION', $this->description)."\r\n";
         $ics .="URL;VALUE=URI:".$this->uri."\r\n";
         $ics .= 'SUMMARY:'.$this->getIcalSplit('SUMMARY', $this->summary)."\r\n";
-        $ics .="DTSTART:".$this->dateStart."\r\n";
+        $ics .=$this->dateStart."\r\n";
         $ics .="END:VEVENT\r\n";
         $ics .="END:VCALENDAR\r\n";
 
